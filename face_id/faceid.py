@@ -63,22 +63,41 @@ class FaceIDSystem:
     def authenticate(self):
         face_img = self.capture_face()
         if face_img is None:
-            return None
+            print("No face detected!")
+            return None, False
 
         encoding = face_encodings(face_img)
         if len(encoding) == 0:
-            return None
+            print("No face encoding found!")
+            return None, False
 
         matches = compare_faces(self.known_encodings, encoding[0], tolerance=0.5)
+        
         if True in matches:
             first_match_index = matches.index(True)
-            return self.known_names[first_match_index]
-        return None
+            return self.known_names[first_match_index], False  # Existing user
+        else:
+            # Prompt for new user name
+            print("New user detected!")
+            while True:
+                name = input("Please enter your name to register: ").strip()
+                if name:
+                    if name in self.known_names:
+                        print("Name already exists! Please choose a different name.")
+                    else:
+                        break
+                else:
+                    print("Invalid name! Please try again.")
+
+            self.known_encodings.append(encoding[0])
+            self.known_names.append(name)
+            self.save_data()
+            return name, True  # New user
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Face ID System')
-    parser.add_argument('--enroll', help='Enroll a new user')
-    parser.add_argument('--auth', action='store_true', help='Authenticate user')
+    parser.add_argument('--enroll', help='Enroll a new user with specific name')
+    parser.add_argument('--auth', action='store_true', help='Authenticate user (register if unknown)')
     args = parser.parse_args()
 
     face_id = FaceIDSystem()
@@ -86,10 +105,13 @@ if __name__ == "__main__":
     if args.enroll:
         face_id.enroll_user(args.enroll)
     elif args.auth:
-        user = face_id.authenticate()
+        user, is_new = face_id.authenticate()
         if user:
-            print(f"Authenticated as {user}")
+            if is_new:
+                print(f"Welcome, {user}! You've been successfully registered.")
+            else:
+                print(f"Authentication successful! Welcome back, {user}!")
         else:
-            print("Authentication failed")
+            print("Authentication failed - no valid face detected")
     else:
         print("Please specify --enroll <name> or --auth")
