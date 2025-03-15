@@ -9,7 +9,7 @@ class FaceIDSystem:
     def __init__(self):
         self.known_encodings = []
         self.known_names = []
-        self.data_file = "face_data.pkl"
+        self.data_file = r"C:\Users\hisha\Desktop\TimeFlow_Project\backend\face_data.pkl"
         self.detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.load_data()
 
