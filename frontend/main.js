@@ -1,2 +1,2 @@
 // frontend/main.js
-console.log('Vite is working!');
+console.log('Vite is working!!');
