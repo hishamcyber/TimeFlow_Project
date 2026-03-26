@@ -18,3 +18,5 @@ npm run dev
 Open your browser and go to: **http://localhost:3000**
 
 **Default Password:** `1234`
+
+⚠️ Note: This project is currently under development. Face recognition features are not yet available in this version. Only password authentication is supported.
